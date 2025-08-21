@@ -56,6 +56,7 @@ export default function Home() {
   const [gateOpen, setGateOpen] = useState(false);
   const [isExistingModalOpen, setIsExistingModalOpen] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
+  const [selectedNFT, setSelectedNFT] = useState<any>(null);
 
   const {
     data: ownedNFTs,
@@ -231,60 +232,6 @@ export default function Home() {
             )}
           </div>
         </div>
-        {/* Modal overlay */}
-        {isSendModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 opacity-0 animate-fadeIn">
-            {/* Modal box */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 max-w-md w-full">
-              <h2 className="text-xl font-bold mb-4 text-black">
-                Transfer NFT
-              </h2>
-
-              <p className="text-gray-600 mb-6">
-                Input the wallet address below to transfer the NFT.
-              </p>
-              <span className="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 inset-ring inset-ring-red-600/10">
-                Be EXTREMELY careful when sending NFTs, as they cannot be
-                recovered if sent to the wrong address.
-              </span>
-              <input
-                type="text"
-                placeholder="0x00000000000000000000000000000000000000"
-                className="w-full p-3 border border-gray-300 rounded-lg mb-4 text-black"
-              />
-              <div className="flex justify-end gap-3">
-                <button
-                  onClick={() => setIsSendModalOpen(false)}
-                  className="mt-2 bg-red-500 font-bold text-white px-4 py-2 rounded-xl w-full"
-                >
-                  Cancel
-                </button>
-
-                <TransactionButton
-                  transaction={() =>
-                    safeTransferFrom({
-                      contract,
-                      from: account!.address,
-                      to: "0x581EC6620e733f41926Aa654C96dDA2542B51A16",
-                      tokenId: nft.id,
-                      value: 1n,
-                      data: "0x",
-                    })
-                  }
-                  onTransactionConfirmed={() => {
-                    alert("NFT sent!");
-                    refetchOwnedNFTs();
-                  }}
-                  unstyled
-                  onError={(err) => alert(err.message)}
-                  className="mt-2 bg-black font-bold text-white px-4 py-2 rounded-xl w-full"
-                >
-                  Send
-                </TransactionButton>
-              </div>
-            </div>
-          </div>
-        )}
       </main>
     </>
   );

@@ -57,6 +57,7 @@ export default function Home() {
   const { mutate: sendTransaction } = useSendTransaction();
   const account = useActiveAccount();
   const [isSendModalOpen, setIsSendModalOpen] = useState(false);
+  const [selectedNFT, setSelectedNFT] = useState<any>(null);
 
   const {
     data: nfts,
@@ -74,25 +75,6 @@ export default function Home() {
     contract: contract,
     address: account?.address || "",
   });
-
-  const transferNft = async (recipientAddress: string, tokenId: string) => {
-    try {
-      if (!contract) {
-        console.error("Contract not loaded.");
-        return;
-      }
-      await contract.call("safeTransferFrom", [
-        account?.address,
-        recipientAddress, // to
-        tokenId, // id
-        1n, // amount
-        "0x", // data
-      ]);
-      console.log("NFT transferred successfully!");
-    } catch (error) {
-      console.error("Error transferring NFT:", error);
-    }
-  };
 
   return (
     <>
@@ -212,7 +194,10 @@ export default function Home() {
                             </TransactionButton>
                             {!alreadyOwned && (
                               <button
-                                onClick={() => setIsSendModalOpen(true)}
+                                onClick={() => {
+                                  setSelectedNFT(nft.id);
+                                  setIsSendModalOpen(true);
+                                }}
                                 className="mt-2 bg-black font-bold text-white px-4 py-2 rounded-xl w-full"
                               >
                                 Send to Wallet
@@ -270,14 +255,15 @@ export default function Home() {
                           </p>
                           <div className=" bg-black p-4 border rounded-lg shadow-md w-full">
                             {nft.metadata.attributes &&
+                            Array.isArray(nft.metadata.attributes) &&
                             nft.metadata.attributes.length > 0 ? (
                               <ul className="space-y-2">
                                 {nft.metadata.attributes.map((attr, index) => (
                                   <li key={index} className="text-white">
                                     <span className="font-semibold">
-                                      {attr.trait_type}:
+                                      {String(attr.trait_type)}:
                                     </span>{" "}
-                                    {attr.value}
+                                    {String(attr.value)}
                                   </li>
                                 ))}
                               </ul>
@@ -336,7 +322,7 @@ export default function Home() {
                       contract,
                       from: account!.address,
                       to: "0x581EC6620e733f41926Aa654C96dDA2542B51A16",
-                      tokenId: nft.id,
+                      tokenId: selectedNFT,
                       value: 1n,
                       data: "0x",
                     })
